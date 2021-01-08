@@ -1,5 +1,4 @@
 use std::{env, io, path};
-use walkdir;
 
 const SYMLINK_FOLLOW: bool = true;
 
@@ -42,7 +41,7 @@ fn is_hidden(entry: &walkdir::DirEntry) -> bool {
     entry
         .file_name()
         .to_str()
-        .map(|s| s.starts_with("."))
+        .map(|s| s.starts_with('.'))
         .unwrap_or(false)
 }
 
@@ -57,7 +56,7 @@ fn scan<P: AsRef<path::Path>>(path: &P) -> Vec<ProjectDir> {
                 Some(ProjectDir {
                     r#type: match entry.file_name().to_str() {
                         Some(FILE_CARGO_TOML) => ProjectType::Cargo,
-                        Some(File_PACKAGE_JSON) => ProjectType::Node,
+                        Some(FILE_PACKAGE_JSON) => ProjectType::Node,
                         Some(FILE_ASSEMBLY_CSHARP) => ProjectType::Unity,
                         Some(FILE_STACK_HASKELL) => ProjectType::HaskellStack,
                         Some(FILE_SBT_BUILD) => ProjectType::Sbt,
@@ -99,17 +98,17 @@ fn pretty_size(size: u64) -> String {
     let (size, symbol) = if size < KIBIBYTE {
         (size, "B")
     } else if size < MEBIBYTE {
-        (size / KIBIBYTE, "KB")
+        (size / KIBIBYTE, "KiB")
     } else if size < GIBIBYTE {
-        (size / MEBIBYTE, "MB")
+        (size / MEBIBYTE, "MiB")
     } else if size < TEBIBYTE {
-        (size / GIBIBYTE, "GB")
+        (size / GIBIBYTE, "GiB")
     } else if size < PEBIBYTE {
-        (size / TEBIBYTE, "TB")
+        (size / TEBIBYTE, "TiB")
     } else if size < EXBIBYTE {
-        (size / PEBIBYTE, "PB")
+        (size / PEBIBYTE, "PiB")
     } else {
-        (size / EXBIBYTE, "EB")
+        (size / EXBIBYTE, "EiB")
     };
 
     format!("{:.1}{}", size, symbol)
