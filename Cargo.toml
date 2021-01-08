@@ -1,0 +1,26 @@
+[package]
+name = "codesweeper"
+version = "0.1.0"
+authors = ["Warren Galyen <wgalyen@bellhelmets.com>"]
+description = """
+a code filesystem cleaning tool that recursively searches directories
+for known project structures and determines how much space you could save by
+deleting the unnecessary files.
+"""
+documentation = "https://github.com/wgalyen/CodeSweeper"
+homepage = "https://github.com/wgalyen/CodeSweeper"
+repository = "https://github.com/wgalyen/CodeSweeper"
+readme = "README.md"
+categories = ["command-line-utilities"]
+license = "MIT"
+exclude = ["test_dir"]
+edition = "2018"
+
+
+[dependencies]
+walkdir = "2"
+
+[profile.release]
+incremental = false
+lto = true
+codegen-units = 1 
