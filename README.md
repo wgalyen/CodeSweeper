@@ -8,7 +8,8 @@ Supports:
 
 - Cargo projects
 - Node projects
-- Unity Projects
+- Unity projects
+- SBT projects
 - Haskell Stack projects
 
 ## Roadmap
