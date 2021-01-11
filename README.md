@@ -47,3 +47,33 @@ Calculating savings per project
     4.0GB rust-analyzer (Cargo) C:\Users\Warren\code\rust-analyzer
 9.5GB possible savings
 ```
+
+## Options/Flags
+
+### Artifact Dirs
+
+`codesweeper -a` will output a line-separated list of artifact directories.
+
+```
+$ codesweeper test_dir -a
+C:\Users\Warren\code\codesweeper\test_dir\node_project\node_modules
+C:\Users\Warren\code\codesweeper\test_dir\rust_project\target
+C:\Users\Warren\code\codesweeper\test_dir\health-dots\Temp
+C:\Users\Warren\code\codesweeper\test_dir\health-dots\Obj
+C:\Users\Warren\code\codesweeper\test_dir\health-dots\MemoryCaptures
+C:\Users\Warren\code\codesweeper\test_dir\health-dots\Build
+```
+
+### Command
+
+`codesweeper -c <COMMAND>` will run your supplied command for each artifact directory.
+
+```
+$ codesweeper test_dir -c echo
+C:\Users\Warren\code\codesweeper\test_dir\node_project\node_modules
+C:\Users\Warren\code\codesweeper\test_dir\rust_project\target
+C:\Users\Warren\code\codesweeper\test_dir\health-dots\Temp
+C:\Users\Warren\code\codesweeper\test_dir\health-dots\Obj
+C:\Users\Warren\code\codesweeper\test_dir\health-dots\MemoryCaptures
+C:\Users\Warren\code\codesweeper\test_dir\health-dots\Build
+```
