@@ -6,11 +6,6 @@ edition = "2018"
 
 [dependencies]
 druid = "0.6.0"
-quote = "1.0.8"
-
-# [dependencies.druid]
-# path = "../../druid/druid"
-# version = "*"
 
 [dependencies.codesweeper-lib]
 path = "../codesweeper-lib"
