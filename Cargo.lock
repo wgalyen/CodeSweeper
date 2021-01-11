@@ -45,7 +45,14 @@ dependencies = [
 name = "codesweeper"
 version = "0.2.0"
 dependencies = [
+ "codesweeper-lib",
  "structopt",
+]
+
+[[package]]
+name = "codesweeper-lib"
+version = "0.1.0"
+dependencies = [
  "walkdir",
 ]
 
