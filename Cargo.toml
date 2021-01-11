@@ -1,6 +1,6 @@
 [package]
 name = "codesweeper"
-version = "0.1.0"
+version = "0.2.0"
 authors = ["Warren Galyen <wgalyen@bellhelmets.com>"]
 description = """
 a code filesystem cleaning tool that recursively searches directories
