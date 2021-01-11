@@ -32,14 +32,18 @@ const PROJECT_STACK_NAME: &str = "Stack";
 const PROJECT_SBT_NAME: &str = "SBT";
 const PROJECT_MVN_NAME: &str = "Maven";
 
-fn check_file_exists(path: &path::Path, file_name: &str, project_type: ProjectType) -> Option<Project> {
+fn check_file_exists(
+    path: &path::Path,
+    file_name: &str,
+    project_type: ProjectType,
+) -> Option<Project> {
     let has_cargo_toml = path.read_dir().unwrap().any(|r| match r {
         Ok(de) => de.file_name() == file_name,
         Err(_) => false,
     });
     if has_cargo_toml {
         return Some(Project {
-            project_type: project_type,
+            project_type,
             path: path.to_path_buf(),
         });
     }
@@ -69,7 +73,6 @@ fn stack_project(path: &path::Path) -> Option<Project> {
 fn mvn_project(path: &path::Path) -> Option<Project> {
     check_file_exists(path, FILE_MVN_BUILD, ProjectType::Maven)
 }
-
 
 const PROJECT_TYPES: [fn(path: &path::Path) -> Option<Project>; 6] = [
     cargo_project,
@@ -111,16 +114,9 @@ impl Project {
     }
 
     fn size(&self) -> u64 {
-        match self.project_type {
-            ProjectType::Cargo => PROJECT_CARGO_DIRS.iter(),
-            ProjectType::Node => PROJECT_NODE_DIRS.iter(),
-            ProjectType::Unity => PROJECT_UNITY_DIRS.iter(),
-            ProjectType::Stack => PROJECT_STACK_DIRS.iter(),
-            ProjectType::SBT => PROJECT_SBT_DIRS.iter(),
-            ProjectType::Maven => PROJECT_MVN_DIRS.iter(),
-        }
-        .map(|p| dir_size(&self.path.join(p)))
-        .sum()
+        self.artifact_dirs()
+            .map(|p| dir_size(&self.path.join(p)))
+            .sum()
     }
 
     fn type_name(&self) -> &str {
