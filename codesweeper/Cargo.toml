@@ -10,7 +10,7 @@ deleting the unnecessary files.
 documentation = "https://github.com/wgalyen/codesweeper"
 homepage = "https://github.com/wgalyen/codesweeper"
 repository = "https://github.com/wgalyen/codesweeper"
-readme = "README.md"
+readme = "../README.md"
 categories = ["command-line-utilities"]
 license = "MIT"
 exclude = ["test_dir"]
