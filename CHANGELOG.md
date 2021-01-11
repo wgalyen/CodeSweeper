@@ -1,7 +1,7 @@
 # 0.3
 
 - Add basic graphic user interface
-- Optimize project discovery phase for a massive 97.5% runtime reduction
+- Rewrite project discovery phase for a massive 97.5% runtime reduction. This includes a correctness fix, projects within the artifacts of other projects will not be listed and therefore will not be included more than once in the size total (previously they were).
 - Break project into cargo workspace
 - Improve path handling, skip folders that don't exist
 
