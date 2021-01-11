@@ -59,7 +59,7 @@ Calculating savings per project
 
 ### Artifact Dirs
 
-`codesweeper -a` will output a line-separated list of artifact directories.
+`codesweeper -a` will output a line-separated list of artifact directories you can delete to reclaim space.
 
 ```
 $ codesweeper test_dir -a
