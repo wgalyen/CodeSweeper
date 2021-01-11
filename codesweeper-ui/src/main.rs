@@ -1,9 +1,11 @@
 use std::{env, sync::Arc, thread};
 
 use druid::{
-    widget::{Button, Flex, Label, List, Scroll, WidgetExt},
-    AppLauncher, BoxConstraints, Command, Data, Env, Event, EventCtx, LayoutCtx, Lens, LifeCycle,
-    LifeCycleCtx, LocalizedString, PaintCtx, Selector, Size, UpdateCtx, Widget, WindowDesc,
+    commands::{OPEN_FILE, SHOW_OPEN_PANEL},
+    widget::{Button, Container, Flex, Label, List, Scroll, WidgetExt},
+    AppLauncher, BoxConstraints, Color, Command, Data, Env, Event, EventCtx, FileDialogOptions,
+    FileInfo, LayoutCtx, Lens, LifeCycle, LifeCycleCtx, LocalizedString, PaintCtx, Selector, Size,
+    UpdateCtx, Widget, WindowDesc,
 };
 
 use codesweeper_lib::{clean, pretty_size, scan};
@@ -36,13 +38,18 @@ impl Widget<AppData> for EventHandler {
         match event {
             Event::Command(cmd) if cmd.selector == ADD_ITEM => {
                 let new_elem = cmd.get_object::<ItemData>().unwrap().clone();
-                data.otal += new_elem.1;
+                data.total += new_elem.1;
                 let items = Arc::make_mut(&mut data.items);
                 let pos = items
                     .binary_search_by(|probe| new_elem.1.cmp(&probe.1))
                     .unwrap_or_else(|e| e);
                 items.insert(pos, new_elem);
                 ctx.request_paint();
+
+                // ctx.submit_command(
+                //     Command::new(SHOW_OPEN_PANEL, FileDialogOptions::new()),
+                //     None,
+                // );
             }
             Event::Command(cmd) if cmd.selector == CLEAN_PATH => {
                 let active_item = cmd.get_object::<ItemData>().unwrap().clone();
@@ -56,6 +63,10 @@ impl Widget<AppData> for EventHandler {
                 }
                 data.active_item = None;
                 ctx.request_paint();
+            }
+            Event::Command(cmd) if cmd.selector == OPEN_FILE => {
+                // let file_info = cmd.get_object::<FileInfo>().unwrap().clone();
+                // println!("{:?}", file_info);
             }
             Event::Command(cmd) if cmd.selector == SET_ACTIVE_ITEM => {
                 let active_item = cmd.get_object::<ItemData>().unwrap().clone();
@@ -86,6 +97,7 @@ impl Widget<AppData> for EventHandler {
 fn main() {
     let window = WindowDesc::new(make_ui)
         .title(LocalizedString::new("codesweeper-main-window-title").with_placeholder("CodeSweeper"));
+        .window_size((1000.0, 500.0));
 
     let launcher = AppLauncher::with_window(window);
 
@@ -139,6 +151,8 @@ fn make_ui() -> impl Widget<AppData> {
         0.0,
     );
 
+    let mut path_listing = Flex::column();
+    path_listing.add_child(Label::new("Projects").padding(10.0).center(), 0.0);
     let l = Scroll::new(
         List::new(|| {
             Button::new(
@@ -151,9 +165,11 @@ fn make_ui() -> impl Widget<AppData> {
                 },
             )
         })
-        .lens(AppData::items),
+        .lens(AppData::items)
+        .padding(2.5),
     )
     .vertical();
+    path_listing.add_child(path_listing, 1.0);
 
     {
         let mut horiz = Flex::row();
@@ -162,7 +178,10 @@ fn make_ui() -> impl Widget<AppData> {
 
         {
             let mut vert = Flex::column();
-            vert.add_child(Label::new("Active Item Information"), 0.0);
+            vert.add_child(
+                Label::new("Active Item Information").padding(10.0).center(),
+                0.0,
+            );
             vert.add_child(
                 Label::new(|data: &AppData, _env: &_| match data.active_item {
                     Some((ref name, size)) => format!("{} {}", name, pretty_size(size)),
@@ -181,7 +200,12 @@ fn make_ui() -> impl Widget<AppData> {
                 ),
                 0.0,
             );
-            horiz.add_child(vert, 1.0);
+            
+            horiz.add_child(
+                // Container::new(vert.padding(2.5)).border(Color::rgb(1.0, 0.0, 0.0), 2.0),
+                vert.padding(2.5),
+                1.0,
+            );
         }
         root.add_child(horiz, 1.0);
     }
