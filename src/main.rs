@@ -1,6 +1,5 @@
 use std::{env, io, path};
 use structopt::StructOpt;
-use walkdir;
 
 const SYMLINK_FOLLOW: bool = true;
 
