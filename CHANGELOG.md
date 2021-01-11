@@ -1,3 +1,10 @@
+# 0.3
+
+- Add basic graphic user interface
+- Optimize project discovery phase for a massive 97.5% runtime reduction
+- Break project into cargo workspace
+- Improve path handling, skip folders that don't exist
+
 # 0.2
 
 - Added Haskell Stack project support
