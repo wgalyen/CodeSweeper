@@ -8,6 +8,7 @@ const FILE_PACKAGE_JSON: &str = "package.json";
 const FILE_ASSEMBLY_CSHARP: &str = "Assembly-CSharp.csproj";
 const FILE_STACK_HASKELL: &str = "stack.yaml";
 const FILE_SBT_BUILD: &str = "build.sbt";
+const FILE_MVN_BUILD: &str = "pom.xml";
 
 const PROJECT_CARGO_DIRS: [&str; 1] = ["target"];
 const PROJECT_NODE_DIRS: [&str; 1] = ["node_modules"];
@@ -22,12 +23,14 @@ const PROJECT_UNITY_DIRS: [&str; 7] = [
 ];
 const PROJECT_STACK_DIRS: [&str; 1] = [".stack-work"];
 const PROJECT_SBT_DIRS: [&str; 2] = ["target", "project/target"];
+const PROJECT_MVN_DIRS: [&str; 1] = ["target"];
 
 const PROJECT_CARGO_NAME: &str = "Cargo";
 const PROJECT_NODE_NAME: &str = "Node";
 const PROJECT_UNITY_NAME: &str = "Unity";
 const PROJECT_STACK_NAME: &str = "Stack";
 const PROJECT_SBT_NAME: &str = "SBT";
+const PROJECT_MVN_NAME: &str = "Maven";
 
 fn check_file_exists(path: &path::Path, file_name: &str, project_type: ProjectType) -> Option<Project> {
     let has_cargo_toml = path.read_dir().unwrap().any(|r| match r {
@@ -63,12 +66,18 @@ fn stack_project(path: &path::Path) -> Option<Project> {
     check_file_exists(path, FILE_STACK_HASKELL, ProjectType::Stack)
 }
 
-const PROJECT_TYPES: [fn(path: &path::Path) -> Option<Project>; 5] = [
+fn mvn_project(path: &path::Path) -> Option<Project> {
+    check_file_exists(path, FILE_MVN_BUILD, ProjectType::Maven)
+}
+
+
+const PROJECT_TYPES: [fn(path: &path::Path) -> Option<Project>; 6] = [
     cargo_project,
     node_project,
     unity_project,
     stack_project,
     sbt_project,
+    mvn_project,
 ];
 
 enum ProjectType {
@@ -77,6 +86,7 @@ enum ProjectType {
     Unity,
     Stack,
     SBT,
+    Maven,
 }
 
 struct Project {
@@ -92,6 +102,7 @@ impl Project {
             ProjectType::Unity => PROJECT_UNITY_DIRS.iter(),
             ProjectType::Stack => PROJECT_STACK_DIRS.iter(),
             ProjectType::SBT => PROJECT_SBT_DIRS.iter(),
+            ProjectType::Maven => PROJECT_MVN_DIRS.iter(),
         }
     }
 
@@ -106,6 +117,7 @@ impl Project {
             ProjectType::Unity => PROJECT_UNITY_DIRS.iter(),
             ProjectType::Stack => PROJECT_STACK_DIRS.iter(),
             ProjectType::SBT => PROJECT_SBT_DIRS.iter(),
+            ProjectType::Maven => PROJECT_MVN_DIRS.iter(),
         }
         .map(|p| dir_size(&self.path.join(p)))
         .sum()
@@ -118,6 +130,7 @@ impl Project {
             ProjectType::Unity => PROJECT_UNITY_NAME,
             ProjectType::Stack => PROJECT_STACK_NAME,
             ProjectType::SBT => PROJECT_SBT_NAME,
+            ProjectType::Maven => PROJECT_MVN_NAME,
         }
     }
 }
