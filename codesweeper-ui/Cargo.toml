@@ -10,3 +10,9 @@ druid = "0.6.0"
 [dependencies.codesweeper-lib]
 path = "../codesweeper-lib"
 version = "*"
+
+[profile.release]
+incremental = false
+lto = true
+codegen-units = 1
+opt-level = "z" 

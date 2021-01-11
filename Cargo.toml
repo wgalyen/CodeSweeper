@@ -10,4 +10,5 @@ exclude = [
 [profile.release]
 incremental = false
 lto = true
-codegen-units = 1 
+codegen-units = 1
+opt-level = "z"
