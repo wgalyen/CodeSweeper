@@ -18,11 +18,13 @@ jobs:
 
       - name: Run cargo fmt
         uses: actions-rs/cargo@v1
+        run: cd codesweeper
         with:
           command: fmt
           args: --all -- --check
 
       - name: Run cargo clippy
+        run: cd codesweeper
         uses: actions-rs/cargo@v1
         with:
           command: clippy
