@@ -2,7 +2,9 @@
 members = [
   "codesweeper",
   "codesweeper-lib",
-  "codesweeper-ui",
+]
+exclude = [
+   "codesweeper-ui",
 ]
 
 [profile.release]
