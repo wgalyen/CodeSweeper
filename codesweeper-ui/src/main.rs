@@ -8,8 +8,8 @@ use std::{
 use druid::{
     commands::{OPEN_FILE, SHOW_OPEN_PANEL},
     widget::{Button, Controller, Flex, Label, List, Scroll, ViewSwitcher, WidgetExt},
-    AppLauncher, Command, Data, Env, Event, EventCtx, FileDialogOptions, FileInfo, Lens,
-    LocalizedString, Selector, Widget, WindowDesc,
+    AppLauncher, Command, Data, Env, Event, EventCtx, ExtEventSink, FileDialogOptions, FileInfo,
+    Lens, LocalizedString, Selector, Widget, WindowDesc,
 };
 
 use codesweeper_lib::{clean, pretty_size, scan};
@@ -169,6 +169,46 @@ impl<W: Widget<AppData>> Controller<AppData, W> for EventHandler {
     }
 }
 
+fn spawn_scanner_thread(
+    scan_starter_recv: mpsc::Receiver<ScanStarterThreadMsg>,
+    event_sink: ExtEventSink,
+) -> Result<(), Box<dyn std::error::Error>> {
+    thread::Builder::new()
+        .name(String::from("scan"))
+        .spawn(move || loop {
+            match scan_starter_recv.recv().expect("scan starter thread") {
+                ScanStarterThreadMsg::StartScan(p) => {
+                    let event_sink = event_sink.clone();
+                    thread::spawn(move || {
+                        scan(&p).for_each(|project| {
+                            let name = project.name();
+                            let project_size = project.size_dirs();
+                            let display = path::Path::new(&name)
+                                .file_name()
+                                .map(|s| s.to_str().unwrap_or(&name))
+                                .unwrap_or(&name);
+                            let project = Project {
+                                display: String::from(display),
+                                path: name,
+                                p_type: project.type_name().into(),
+                                artifact_size: project_size.artifact_size,
+                                non_artifact_size: project_size.non_artifact_size,
+                                dirs: Arc::new(project_size.dirs),
+                            };
+                            event_sink
+                                .submit_command(ADD_ITEM, project, None)
+                                .expect("error submitting ADD_ITEM command");
+                        });
+                        event_sink
+                            .submit_command(SCAN_COMPLETE, false, None)
+                            .expect("error submitting SCAN_COMPLETE command");
+                    });
+                }
+            }
+        })?;
+    Ok(())
+}
+
 fn main() {
     let window = WindowDesc::new(make_ui)
         .title(LocalizedString::new("codesweeper-main-window-title").with_placeholder("CodeSweeper 🧹"))
@@ -176,41 +216,10 @@ fn main() {
 
     let launcher = AppLauncher::with_window(window);
 
-    let event_sink = launcher.get_external_handle();
-
     let (scan_starter_send, scan_starter_recv) = mpsc::sync_channel::<ScanStarterThreadMsg>(0);
 
-    thread::spawn(move || loop {
-        match scan_starter_recv.recv().expect("scan starter thread") {
-            ScanStarterThreadMsg::StartScan(p) => {
-                let event_sink = event_sink.clone();
-                thread::spawn(move || {
-                    scan(&p).for_each(|project| {
-                        let name = project.name();
-                        let project_size = project.size_dirs();
-                        let display = path::Path::new(&name)
-                            .file_name()
-                            .map(|s| s.to_str().unwrap_or(&name))
-                            .unwrap_or(&name);
-                        let project = Project {
-                            display: String::from(display),
-                            path: name,
-                            p_type: project.type_name().into(),
-                            artifact_size: project_size.artifact_size,
-                            non_artifact_size: project_size.non_artifact_size,
-                            dirs: Arc::new(project_size.dirs),
-                        };
-                        event_sink
-                            .submit_command(ADD_ITEM, project, None)
-                            .expect("error submitting ADD_ITEM command");
-                    });
-                    event_sink
-                        .submit_command(SCAN_COMPLETE, false, None)
-                        .expect("error submitting SCAN_COMPLETE command");
-                });
-            }
-        }
-    });
+    spawn_scanner_thread(scan_starter_recv, launcher.get_external_handle())
+        .expect("error spawning scan thread");
 
     launcher
         .use_simple_logger()
@@ -230,7 +239,7 @@ fn main() {
 fn make_ui() -> impl Widget<AppData> {
     let mut root: Flex<AppData> = Flex::column();
 
-    root.add_child(Label::new("CodeSweeper 🧹").padding(10.0).center(), 0.0);
+    root.add_child(Label::new("Kondo 🧹").padding(10.0).center(), 0.0);
 
     root.add_child(
         Flex::<AppData>::row()
