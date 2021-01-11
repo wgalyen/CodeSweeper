@@ -2,7 +2,16 @@
 name = "codesweeper-ui"
 version = "0.1.0"
 authors = ["Warren Galyen <wgalyen@bellhelmets.com>"]
+description = """
+a filesystem cleaning tool that recursively searches directories
+for known project structures and allows you to clean them of unnecessary files
+like build artifacts.
+"""
+documentation = "https://github.com/wgalyen/codesweeper"
+homepage = "https://github.com/wgalyen/codesweeper"
+repository = "https://github.com/wgalyen/codesweeper"
 edition = "2018"
+license = "MIT"
 
 [dependencies]
 druid = "0.5.0"
