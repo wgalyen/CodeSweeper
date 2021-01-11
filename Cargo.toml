@@ -2,6 +2,7 @@
 members = [
   "codesweeper",
   "codesweeper-lib",
+  "codesweeper-ui",
 ]
 
 [profile.release]
