@@ -4,7 +4,7 @@
 
 Cleans unneeded directories and files from your system.
 
-It will identify the disk space savings you would get from deleting temporary/unnecessary files from project directories, such as `target` from Cargo projects and `node_modules` from Node projects. Currently `codesweeper` doesn't actually delete any files.
+It will identify the disk space savings you would get from deleting temporary/unnecessary files from project directories, such as `target` from Cargo projects and `node_modules` from Node projects.
 
 Supports:
 
@@ -14,19 +14,25 @@ Supports:
 - [SBT](https://www.scala-sbt.org/) projects
 - [Haskell Stack](https://docs.haskellstack.org/) projects
 - [Maven](https://maven.apache.org/) projects
+- [Unreal Engine](https://www.unrealengine.com/) projects
 
 ## Installation
 
-You can install `codesweeper` via Cargo with `cargo install codesweeper`.
+### Graphic User Interface
 
-If you don't have Cargo installed you can download a binary for your platform from the [Releases](https://github.com/wgalyen/codesweeper/releases) page.
+Windows and Mac builds are available on the [Releases](https://github.com/wgalyen/codesweeper/releases) page.
 
-## Roadmap
+### Command line
 
-- Actually delete (with prompt)
-- Handle Unity cache, editor cache
+Windows, Mac, and Linux builds are available on the [Releases](https://github.com/wgalyen/codesweeper/releases) page.
 
 ## Operation
+
+### Graphic User Interface
+
+Launch `codesweeper-ui`, select a directory to be scanned, evaluate & clean directories as needed.
+
+### Command Line Interface
 
 Running `codesweeper` without a directory specified will run in the current directory.
 
@@ -84,3 +90,9 @@ C:\Users\Warren\code\codesweeper\test_dir\health-dots\Obj
 C:\Users\Warren\code\codesweeper\test_dir\health-dots\MemoryCaptures
 C:\Users\Warren\code\codesweeper\test_dir\health-dots\Build
 ```
+
+## Building/Development
+
+To build `codesweeper` you can run `cargo build` from the projects root directory.
+
+To build `codesweeper-ui` you must first navigate into the `codesweeper-ui` directory, then you can run `cargo build`. Because we use [druid](https://github.com/xi-editor/druid) for the interface you'll need to satisfy druid's [platform specific dependencies](https://github.com/xi-editor/druid#platform-notes).
