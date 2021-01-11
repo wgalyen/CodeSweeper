@@ -1,4 +1,4 @@
-use std::{fs, path};
+use std::{error, fs, path};
 
 const SYMLINK_FOLLOW: bool = true;
 
@@ -247,12 +247,14 @@ pub fn clean(project_path: &str) -> Result<(), Box<dyn error::Error>> {
         Some(p) => p,
         None => return Ok(()),
     } {
-        for add in p
+        for ad in p
             .artifact_dirs()
             .map(|ad| path::PathBuf::from(project_path).join(ad))
+            .filter(|ad| ad.exists())
         {
-            println!("deleting {:?}", ad);
-            // fs::remove_dir(ad)?;
+            if let Err(e) = fs::remove_dir_all(&ad) {
+                eprintln!("error removing directory {:?}: {:?}", ad, e);
+            }
         }
     }
     Ok(())
