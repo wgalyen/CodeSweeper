@@ -1,4 +1,4 @@
-# Unreleased
+# 0.4
 
 - Remove all options and subcommands to re-focus the intent of Kondo
 - Default is now interactive mode, allowing users to choose options on a per-project basis
