@@ -1,6 +1,6 @@
 # CodeSweeper 🧹
 
-![CodeSweeper Tests](https://github.com/wgalyen/codesweeper/workflows/CodeSweeper%20Tests/badge.svg) ![CodeSweeper Lints](https://github.com/wgalyen/codesweeper/workflows/CodeSweeper%20Lints/badge.svg)
+![CodeSweeper Lints](https://github.com/wgalyen/codesweeper/workflows/CodeSweeper%20Lints/badge.svg)
 
 Cleans unneeded directories and files from your system.
 
@@ -40,55 +40,30 @@ Running `codesweeper` without a directory specified will run in the current dire
 $ codesweeper
 ```
 
-Supplying an argument will tell `codesweeper` where to start.
+Supplying a path will tell `codesweeper` where to start. Multiple paths are supported..
 
 ```
-$ codesweeper code/my_project
+$ codesweeper code/my_project code/my_project_2
 ```
 
 ## Example Output
 
 ```
-$ codesweeper ~
-Scanning "C:/Users/Warren"
-3 projects found
-Calculating savings per project
-  (redacted 1000~ lines)
-  385.6MB UnityTestApp (Unity) C:\Users\Warren\code\UnityTestApp
-  458.7MB tokio (Cargo) C:\Users\Warren\code\tokio
-    1.5GB ui-testing (Node) C:\Users\Warren\code\ui-testing
-    4.0GB rust-analyzer (Cargo) C:\Users\Warren\code\rust-analyzer
-9.5GB possible savings
-```
+$ codesweeper ~/code
+/Users/warren/code/unity Cargo project
+  └─ target (489.1KiB)
+  delete above artifact directories? ([y]es, [n]o, [a]ll, [q]uit): y
+  deleted 489.1KiB
 
-## Options/Flags
+/Users/warren/code/multiplayer-kit/generator Cargo project
+  └─ target (874.3KiB)
+  delete above artifact directories? ([y]es, [n]o, [a]ll, [q]uit): n
 
-### Artifact Dirs
+/Users/warren/code/chat Cargo project
+  └─ target (37.2MiB)
+  delete above artifact directories? ([y]es, [n]o, [a]ll, [q]uit): q
 
-`codesweeper -a` will output a line-separated list of artifact directories you can delete to reclaim space.
-
-```
-$ codesweeper test_dir -a
-C:\Users\Warren\code\codesweeper\test_dir\node_project\node_modules
-C:\Users\Warren\code\codesweeper\test_dir\rust_project\target
-C:\Users\Warren\code\codesweeper\test_dir\health-dots\Temp
-C:\Users\Warren\code\codesweeper\test_dir\health-dots\Obj
-C:\Users\Warren\code\codesweeper\test_dir\health-dots\MemoryCaptures
-C:\Users\Warren\code\codesweeper\test_dir\health-dots\Build
-```
-
-### Command
-
-`codesweeper -c <COMMAND>` will run your supplied command for each artifact directory.
-
-```
-$ codesweeper test_dir -c echo
-C:\Users\Warren\code\codesweeper\test_dir\node_project\node_modules
-C:\Users\Warren\code\codesweeper\test_dir\rust_project\target
-C:\Users\Warren\code\codesweeper\test_dir\health-dots\Temp
-C:\Users\Warren\code\codesweeper\test_dir\health-dots\Obj
-C:\Users\Warren\code\codesweeper\test_dir\health-dots\MemoryCaptures
-C:\Users\Warren\code\codesweeper\test_dir\health-dots\Build
+Total bytes deleted: 489.1KiB
 ```
 
 ## Building/Development
