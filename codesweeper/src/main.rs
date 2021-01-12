@@ -40,8 +40,6 @@ enum Command {
         #[structopt(name = "DIRS", parse(from_os_str))]
         dirs: Vec<std::path::PathBuf>,
     },
-    /// List projects in specified paths
-    List,
 }
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -68,8 +66,6 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let stdout = io::stdout();
     let mut write_handle = stdout.lock();
 
-    let project_dirs: Vec<Project> = dirs.iter().flat_map(scan).collect();
-
     match opt.subcommand {
         Some(Command::Clean { dry_run, dirs }) => {
             let cd = env::current_dir()?;
@@ -80,41 +76,41 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                     .map(|d| path_canonicalize(&cd, d))
                     .collect()
             };
-            let projects = dirs.iter().flat_map(scan).map(|p: Project| {
-                (
-                    p.name(),
-                    p.artifact_dirs()
-                        .map(|d| (d.to_string(), p.path.join(d)))
-                        .collect::<Vec<_>>(),
-                )
-            });
+            let project_dirs = dirs.iter().flat_map(scan);
             let mut total = 0;
-            if dry_run {
-                for (name, dirs) in projects {
-                    writeln!(&mut write_handle, "{}", name)?;
-                    for (i, (name, path)) in dirs.iter().enumerate() {
-                        write!(
-                            &mut write_handle,
-                            "  {}─ {} ",
-                            if i == dirs.len() - 1 { "└" } else { "├" },
-                            name,
-                        )?;
-                        let size = dir_size(path);
-                        total += size;
-                        writeln!(&mut write_handle, "({})", pretty_size(size))?;
+            let mut artifact_dirs = Vec::with_capacity(10); // pre-allocated vec to reduce allocations
+            for project in project_dirs {
+                writeln!(&mut write_handle, "{}", project.name())?;
+                artifact_dirs.extend(
+                    project
+                        .artifact_dirs()
+                        .map(|d| (d.to_string(), project.path.join(d))),
+                );
+                for (i, (name, path)) in artifact_dirs.iter().enumerate() {
+                    write!(
+                        &mut write_handle,
+                        "  {}─ {}",
+                        if i == dirs.len() - 1 { "└" } else { "├" },
+                        name,
+                    )?;
+                    let size = dir_size(path);
+                    total += size;
+                    write!(&mut write_handle, " ({})", pretty_size(size))?;
+                    if !dry_run {
+                        project.clean();
+                        write!(&mut write_handle, " ✔")?;
                     }
+                    writeln!(&mut write_handle)?;
                 }
-                writeln!(&mut write_handle, "Disk saving: {}", pretty_size(total))?;
-            } else {
+                artifact_dirs.clear();
             }
-            return Ok(());
-        }
-        Some(Command::List) => {
-            println!("List");
+            writeln!(&mut write_handle, "Disk saving: {}", pretty_size(total))?;
             return Ok(());
         }
         None => {}
     }
+
+    let project_dirs: Vec<Project> = dirs.iter().flat_map(scan).collect();
 
     if let Some(command) = opt.command {
         for dir in project_dirs.iter() {
