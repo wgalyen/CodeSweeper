@@ -4,6 +4,10 @@
 
 Cleans unneeded directories and files from your system.
 
+![codesweeper gui](https://user-images.githubusercontent.com/51970726/104384474-60e89a80-54e6-11eb-8e20-b40507d912fc.jpg)
+
+![codesweeper command line](https://user-images.githubusercontent.com/51970726/104384540-7fe72c80-54e6-11eb-8344-cb2015991242.jpg)
+
 It will identify the disk space savings you would get from deleting temporary/unnecessary files from project directories, such as `target` from Cargo projects and `node_modules` from Node projects.
 
 Supports:
