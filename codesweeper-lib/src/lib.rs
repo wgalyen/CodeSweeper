@@ -65,17 +65,16 @@ pub struct ProjectSize {
 }
 
 impl Project {
-    pub fn artifact_dirs(&self) -> impl Iterator<Item = &str> {
+    pub fn artifact_dirs(&self) -> &[&str] {
         match self.project_type {
-            ProjectType::Cargo => PROJECT_CARGO_DIRS.iter(),
-            ProjectType::Node => PROJECT_NODE_DIRS.iter(),
-            ProjectType::Unity => PROJECT_UNITY_DIRS.iter(),
-            ProjectType::Stack => PROJECT_STACK_DIRS.iter(),
-            ProjectType::SBT => PROJECT_SBT_DIRS.iter(),
-            ProjectType::Maven => PROJECT_MVN_DIRS.iter(),
-            ProjectType::Unreal => PROJECT_UNREAL_DIRS.iter(),
+            ProjectType::Cargo => &PROJECT_CARGO_DIRS,
+            ProjectType::Node => &PROJECT_NODE_DIRS,
+            ProjectType::Unity => &PROJECT_UNITY_DIRS,
+            ProjectType::Stack => &PROJECT_STACK_DIRS,
+            ProjectType::SBT => &PROJECT_SBT_DIRS,
+            ProjectType::Maven => &PROJECT_MVN_DIRS,
+            ProjectType::Unreal => &PROJECT_UNREAL_DIRS,
         }
-        .copied()
     }
 
     pub fn name(&self) -> String {
@@ -84,6 +83,8 @@ impl Project {
 
     pub fn size(&self) -> u64 {
         self.artifact_dirs()
+            .iter()
+            .copied()
             .map(|p| dir_size(&self.path.join(p)))
             .sum()
     }
@@ -104,7 +105,7 @@ impl Project {
             Ok(rd) => rd,
         };
 
-        let artifact_dirs: Vec<&str> = self.artifact_dirs().collect();
+        let artifact_dirs: Vec<&str> = self.artifact_dirs().iter().copied().collect();
 
         for entry in project_root.filter_map(|rd| rd.ok()) {
             let file_type = match entry.file_type() {
@@ -158,6 +159,8 @@ impl Project {
     pub fn clean(&self) {
         for artifact_dir in self
             .artifact_dirs()
+            .iter()
+            .copied()
             .map(|ad| self.path.join(ad))
             .filter(|ad| ad.exists())
         {
@@ -296,6 +299,8 @@ pub fn clean(project_path: &str) -> Result<(), Box<dyn error::Error>> {
     if let Some(project) = project {
         for artifact_dir in project
             .artifact_dirs()
+            .iter()
+            .copied()
             .map(|ad| path::PathBuf::from(project_path).join(ad))
             .filter(|ad| ad.exists())
         {
