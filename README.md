@@ -70,4 +70,4 @@ Total bytes deleted: 489.1KiB
 
 To build `codesweeper` you can run `cargo build` from the projects root directory.
 
-To build `codesweeper-ui` you must first navigate into the `codesweeper-ui` directory, then you can run `cargo build`. Because we use [druid](https://github.com/xi-editor/druid) for the interface you'll need to satisfy druid's [platform specific dependencies](https://github.com/xi-editor/druid#platform-notes).
+To build `codesweeper-ui` you must first navigate into the `codesweeper-ui` directory, then you can run `cargo build`.
